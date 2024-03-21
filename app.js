@@ -28,7 +28,7 @@ app.get('/last', (req, res) => {
 
 // Ejercicio 4 - Crea una ruta /middle para obtener el libro en la mitad (número 50 en el array)
 app.get('/middle', (req, res) => {
-  let mitad = 50;
+  let mitad = books.length / 2;
   res.status(200).send(books[mitad]);
 })
 
@@ -36,7 +36,8 @@ app.get('/middle', (req, res) => {
 app.get('/author/dante-alighieri', (req, res) => {
   for (let i = 0; i < books.length; i++) {
     if (books[i].author == "Dante Alighieri") {
-      res.status(200).send(books[i].title);
+      //quitamos el send por el "json" para respetar los datos, el "send" lo adapta al navegador
+      res.status(200).json(books[i].title); 
     }
   }
 })
@@ -45,7 +46,7 @@ app.get('/author/dante-alighieri', (req, res) => {
 app.get('/country/charles-dickens', (req, res) => {
   for (let i = 0; i < books.length; i++) {
     if (books[i].author == "Charles Dickens") {
-      res.status(200).send(books[i].country);
+      res.status(200).json(books[i].country);
     }
   }
 })
@@ -55,8 +56,7 @@ app.get('/country/charles-dickens', (req, res) => {
 app.get('/year&pages/cervantes', (req, res) => {
   for (let i = 0; i < books.length; i++) {
     if (books[i].author == "Miguel de Cervantes") {
-      res.status(200).json(books[i].pages)
-      res.status(200).json(books[i].year)
+      res.status(200).json({pages: books[i].pages, year: books[i].year });
     }
   }
 })
@@ -73,25 +73,26 @@ app.get('/country/count/spain', (req, res) => {
 })
 
 // Ejercicio 9 - Crea una ruta /country/at-least/germany para obtener VERDADERO O FALSO dependiendo de si hay o no un libro de Alemania
-app.get('/country/at-least/germany', (req, res) => {
-  for (let i = 0; i < books.length; i++) {
-    if (books[i].country == "Germany") {
-      return true
-    }
-    else return false
-  }
-})
+// http://localhost:3000/country/at-least/germany
+app.get("/country/at-least/germany", (req, res) => {
+  const book = books.filter((element) => element.country === "Germany");
+  const comparison = book.length > 0;
+  res.status(200).json(comparison);
+});
+
+app.get("/country/at-least/germany", (req, res) => {
+  const comparison = books
+                        .some(element => element.country === "Germany");
+  res.status(200).json(comparison);
+});
 
 // Ejercicio 10 - Crea una ruta /pages/all-greater/200 para obtener VERDADERO O FALSO dependiendo de si 
 // todos los libros tienen más de 200 páginas
 app.get('/pages/all-greater/200', (req, res) => {
-  for (let i = 0; i < books.length; i++) {
-    if (books[i].pages > 200) {
-      return true
-    }
-    else return false
-  }
-})
+    const comparison = books
+                          .every(element => element.pages > 100);
+    res.status(200).json(comparison);
+  });
 
 
 //ESTO SIEMPRE VA AL FINAL
